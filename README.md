@@ -1,4 +1,8 @@
-# RmCapture
+# Capture
+
+Experimental webcam image effects. https://rossmills99.github.io/capture/
+
+----
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.6.1.
 
