@@ -299,10 +299,11 @@ function getVids (video, effects): IVidDescription[] {
   styleUrls: ['./capture.component.css']
 })
 export class CaptureComponent implements OnInit {
+  
+  public playing: boolean = false;
+  public vids: IVidDescription[] = [];
 
   private stream: MediaStream;
-  private vids: IVidDescription[] = [];
-  private playing: boolean = false;
   
   @ViewChild('myVideo') video;
 
