@@ -7,7 +7,7 @@ export interface IVidDescription {
 }
 
 @Component({
-  selector: 'app-rm-vid',
+  selector: 'rm-vid',
   templateUrl: './rm-vid.component.html',
   styleUrls: ['./rm-vid.component.css']
 })

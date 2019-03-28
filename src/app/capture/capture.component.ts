@@ -243,7 +243,6 @@ function getEffects(video) {
 } // end getEffects
 
 function getVids (video, effects): IVidDescription[] {
-  console.log('getting vids', video);
     return [
       {
         video: video,
@@ -307,13 +306,10 @@ export class CaptureComponent implements OnInit {
   
   @ViewChild('myVideo') video;
 
-  constructor() {
-    
-  }
+  constructor() {}
 
   play() {
     const video = this.video.nativeElement as HTMLVideoElement;
-    console.log('getEffects', typeof(getEffects));
     this.playing = true;
     navigator.mediaDevices.getUserMedia(
       { // Options
@@ -321,7 +317,13 @@ export class CaptureComponent implements OnInit {
         audio: false
       }).then((localMediaStream) => { // Success
         this.stream = localMediaStream;
-        video.src = URL.createObjectURL(this.stream);
+        // Fallback to src if srcObject is not supported: https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject
+        try {
+          video.srcObject = localMediaStream;
+        }
+        catch(ex) {
+          video.src = URL.createObjectURL(this.stream);
+        }
         video.addEventListener('canplay', () => {
           let effects = getEffects(video);
           this.vids = getVids(video, effects);

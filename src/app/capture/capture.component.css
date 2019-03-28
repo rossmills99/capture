@@ -1,6 +1,5 @@
 div.vid-container {
-  width: 30%;
-  margin-bottom: 30px;
+  width: 33.3333%;
 }
 
 div.vid-row {
@@ -10,23 +9,26 @@ div.vid-row {
 }
 
 .vid-title {
-  background-color: #133;
-  color: #aad;
-  margin-top: -4px;
+  background-color: rgba(55, 76, 91, 0.75);
+  color: #fafafa;
+  position: relative;
+  margin-top: -31px;
   padding: 4px;
 }
 
 button.play-btn {
   border: none;
-  padding: 15px;
-  background-color: #311;
-  border: 1px solid #422;
-  color: #aad;
-  transition: all .3s ease-in;
+  padding: 10px;
+  margin: 10px;
+  background-color: rgb(7, 156, 255);
+  border: 1px solid rgb(41, 41, 41);
+  color: rgb(255, 255, 255);
+  transition: all .1s ease;
   cursor: pointer;
+  border-radius: 4px;
 }
 
 .play-btn:hover {
-  background-color: #422;
-  border: 1px solid #311;
+  background-color: rgb(122, 200, 252);
+  color: #292929;
 }
