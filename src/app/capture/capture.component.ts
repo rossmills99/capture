@@ -2,16 +2,16 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { IVidDescription } from '../rm-vid/rm-vid.component';
 let done = false;
 
-const kernel = [
-  [0, -1, 0],
-  [-1, 4, -1],
-  [0, -1, 0]
-];
-
 function getEffects(video) {
   return {
     // Inspired by https://github.com/ytiurin/imagefilter/blob/master/apply-filter.js
     edgeDetect: function( imageData ) {
+      const kernel = [
+        [0, -1, 0],
+        [-1, 4, -1],
+        [0, -1, 0]
+      ];
+      
       var width = imageData.width;
       var height = imageData.height;
       imageData = imageData.data;
@@ -257,7 +257,8 @@ function getVids (video, effects): IVidDescription[] {
       {
         video: video,
         effect: effects.slices,
-        title: "Slices"
+        title: "Slices",
+        suppressWebWorker: true
       },
       {
         video: video,
@@ -284,11 +285,11 @@ function getVids (video, effects): IVidDescription[] {
         effect: effects.blue,
         title: "Blueness"
       },
-      {
-        video: video,
-        effect: effects.green,
-        title: "Greenness"
-      }
+      // {
+      //   video: video,
+      //   effect: effects.green,
+      //   title: "Greenness"
+      // }
     ];
 } // end getVids
 

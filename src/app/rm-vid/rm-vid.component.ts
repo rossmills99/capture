@@ -1,9 +1,16 @@
 import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 
+/** Inspired by: https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API/Using_web_workers#Embedded_workers */
+function effectToUrl(fn) {
+  const blob = new Blob(['onmessage = (e) => { postMessage(('+fn.toString()+')(e.data)); }'], {type: 'application/javascript'});
+  return URL.createObjectURL(blob)
+}
+
 export interface IVidDescription {
   video: HTMLVideoElement,
   effect: (any) => any,
-  title: string
+  title: string,
+  suppressWebWorker?: boolean
 }
 
 @Component({
@@ -19,35 +26,55 @@ export class RmVidComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    var w = this.vid.video.clientWidth;
-    var h = this.vid.video.clientHeight;
-    var canvas = <HTMLCanvasElement>this.canvas.nativeElement;
-    var vid = this.vid;
+    const w = this.vid.video.clientWidth;
+    const h = this.vid.video.clientHeight;
+    const canvas = <HTMLCanvasElement>this.canvas.nativeElement;
+    const vid = this.vid;
     
     canvas.width = w;
     canvas.height = h;
 
-    var bcanvas = document.createElement('canvas');
+    const bcanvas = document.createElement('canvas');
     bcanvas.width = w;
     bcanvas.height = h
 
-    var context: CanvasRenderingContext2D = canvas.getContext('2d');
-    var bcontext: CanvasRenderingContext2D = bcanvas.getContext('2d');
+    const context: CanvasRenderingContext2D = canvas.getContext('2d');
+    const bcontext: CanvasRenderingContext2D = bcanvas.getContext('2d');
 
-    function draw(video, context: CanvasRenderingContext2D, bcontext: CanvasRenderingContext2D, w, h) {
+    let webWorker: Worker;
+    if (!vid.suppressWebWorker) {
+      const webWorkerUrl = effectToUrl(vid.effect);
+      webWorker = new Worker(webWorkerUrl);
+      
+      webWorker.onmessage = (e) => {
+        context.putImageData(e.data, 0, 0);
+        setTimeout(draw, attemptedRedrawMs, video, context, bcontext, w, h);
+      };
+    }
+
+    const attemptedFps = 25;
+    const attemptedRedrawMs = 1000 / attemptedFps;
+
+    function draw(video, context: CanvasRenderingContext2D, bcontext: CanvasRenderingContext2D, w: number, h: number) {
       if(video.paused || video.ended) {
         console.log("video paused/ended");
         return false;
       }
       bcontext.drawImage(video, 0, 0, w, h);
 
-      var idata = bcontext.getImageData(0, 0, w, h);
-      context.putImageData(vid.effect(idata), 0, 0);
+      const idata = bcontext.getImageData(0, 0, w, h);
 
-      setTimeout(draw, 200, video, context, bcontext, w, h);
+      if (vid.suppressWebWorker) {
+        let effected = vid.effect(idata);
+        context.putImageData(effected, 0, 0);
+        setTimeout(draw, attemptedRedrawMs, video, context, bcontext, w, h);
+      }
+      else {
+        webWorker.postMessage(idata);
+      }
     }
     
-    var video = vid.video;
+    const video = vid.video;
     video.addEventListener('play', function() {
       draw(video, context, bcontext, w, h);	
     });
