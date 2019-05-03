@@ -41,6 +41,9 @@ export class RmVidComponent implements OnInit {
     const context: CanvasRenderingContext2D = canvas.getContext('2d');
     const bcontext: CanvasRenderingContext2D = bcanvas.getContext('2d');
 
+    const attemptedFps = 25;
+    const attemptedRedrawMs = 1000 / attemptedFps;
+    
     let webWorker: Worker;
     if (!vid.suppressWebWorker) {
       const webWorkerUrl = effectToUrl(vid.effect);
@@ -52,10 +55,7 @@ export class RmVidComponent implements OnInit {
       };
     }
 
-    const attemptedFps = 25;
-    const attemptedRedrawMs = 1000 / attemptedFps;
-
-    function draw(video, context: CanvasRenderingContext2D, bcontext: CanvasRenderingContext2D, w: number, h: number) {
+    const draw = (video, context: CanvasRenderingContext2D, bcontext: CanvasRenderingContext2D, w: number, h: number) => {
       if(video.paused || video.ended) {
         console.log("video paused/ended");
         return false;
@@ -65,17 +65,17 @@ export class RmVidComponent implements OnInit {
       const idata = bcontext.getImageData(0, 0, w, h);
 
       if (vid.suppressWebWorker) {
-        let effected = vid.effect(idata);
+        const effected = vid.effect(idata);
         context.putImageData(effected, 0, 0);
         setTimeout(draw, attemptedRedrawMs, video, context, bcontext, w, h);
       }
       else {
         webWorker.postMessage(idata);
       }
-    }
+    };
     
     const video = vid.video;
-    video.addEventListener('play', function() {
+    video.addEventListener('play', () => {
       draw(video, context, bcontext, w, h);	
     });
   }

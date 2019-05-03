@@ -8,6 +8,8 @@ import { NavComponent } from './nav/nav.component';
 import { CaptureComponent } from './capture/capture.component';
 import { RmVidComponent } from './rm-vid/rm-vid.component';
 
+import { VideoEffectsService } from './video-effects.service';
+
 
 const appRoutes: Routes = [
   { 
@@ -23,6 +25,7 @@ const appRoutes: Routes = [
     CaptureComponent,
     RmVidComponent
   ],
+  providers: [VideoEffectsService],
   imports: [
     BrowserModule,
     RouterModule.forRoot(
@@ -30,7 +33,6 @@ const appRoutes: Routes = [
       //{ enableTracing: true } // <-- debugging purposes only
     )
   ],
-  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
